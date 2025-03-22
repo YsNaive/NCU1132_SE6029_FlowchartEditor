@@ -1,10 +1,14 @@
 package manager;
 
-import core.ShapeScene;
-import core.UIButton;
+import core.Pair;
+import visual.VisualPanel;
+import ux.UX_ModeButton;
+import visual.VisualPanelMode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 
 public final class UIManager {
     // it's a static class, create instance is not allow
@@ -32,23 +36,32 @@ public final class UIManager {
         m_frame.setJMenuBar(menuBar);
 
         // 建立左側工具列，按鈕樣式與圖片相似
-        JPanel toolPanel = new JPanel();
+        JPanel      toolPanel   = new JPanel();
+        VisualPanel visualPanel = new VisualPanel();
+
         toolPanel.setLayout(new GridLayout(6, 1, 3, 3));
         toolPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         toolPanel.setBackground(Color.LIGHT_GRAY);
-        String[] tools = {"Select", "Association", "Generalization", "Composition", "Rect", "Oval"};
-        for (String tool : tools) {
-            UIButton button = new UIButton(tool);
+        List<Pair<String, VisualPanelMode>> toolModes = Arrays.asList(
+                new Pair<>("Select"         , VisualPanelMode.Select        ),
+                new Pair<>("Association"    , VisualPanelMode.Association   ),
+                new Pair<>("Generalization" , VisualPanelMode.Generalization),
+                new Pair<>("Composition"    , VisualPanelMode.Composition   ),
+                new Pair<>("Rect"           , VisualPanelMode.Rect          ),
+                new Pair<>("Oval"           , VisualPanelMode.Oval          )
+        );
+
+        for (Pair<String, VisualPanelMode> toolMode : toolModes) {
+            UX_ModeButton button = new UX_ModeButton(toolMode.key, visualPanel, toolMode.value); // 傳入名稱與模式
             button.setFont(customFont);  // 設定按鈕字體
             toolPanel.add(button);
         }
         m_container.add(toolPanel, BorderLayout.WEST);
 
         // 建立畫布區域，添加邊框
-        JPanel canvas = new ShapeScene();
-        canvas.setBackground(Color.WHITE);
-        canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        m_container.add(canvas, BorderLayout.CENTER);
+        visualPanel.setBackground(Color.WHITE);
+        visualPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        m_container.add(visualPanel, BorderLayout.CENTER);
 
         // 設定視窗屬性
         m_frame.setSize(600, 450);

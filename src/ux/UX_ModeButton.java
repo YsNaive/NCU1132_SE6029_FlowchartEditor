@@ -1,24 +1,45 @@
-package core;
+package ux;
+
+import visual.VisualPanel;
+import visual.VisualPanelMode;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class UIButton extends JButton {
+public class UX_ModeButton extends JButton {
     private static final int m_padding = 2;
     private static final int m_radius = 8;
     private Color defaultColor = Color.WHITE;
     private Color hoverColor = new Color(220, 220, 220); // 淺灰色
-
-    public UIButton(String text) {
+    private final VisualPanel     targetPanel;
+    private final VisualPanelMode targetMode;
+    public UX_ModeButton(String text, VisualPanel target, VisualPanelMode mode) {
         super(text);
         setFocusPainted(false);
         setBackground(defaultColor);
         setContentAreaFilled(false);
-
+        this.targetPanel = target;
+        this.targetMode  = mode;
         // 滑鼠監聽事件
-        addMouseListener(new MouseAdapter() {
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                targetPanel.SetMode(targetMode);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 setBackground(hoverColor);
