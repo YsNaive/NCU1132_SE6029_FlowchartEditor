@@ -5,18 +5,17 @@ import visual.VisualPanelMode;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class UX_ModeButton extends JButton {
+public class UI_ModeButton extends JButton {
     private static final int m_padding = 2;
     private static final int m_radius = 8;
     private Color defaultColor = Color.WHITE;
     private Color hoverColor = new Color(220, 220, 220); // 淺灰色
     private final VisualPanel     targetPanel;
     private final VisualPanelMode targetMode;
-    public UX_ModeButton(String text, VisualPanel target, VisualPanelMode mode) {
+    public UI_ModeButton(String text, VisualPanel target, VisualPanelMode mode) {
         super(text);
         setFocusPainted(false);
         setBackground(defaultColor);
@@ -27,12 +26,12 @@ public class UX_ModeButton extends JButton {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                targetPanel.SetMode(targetMode);
+
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-
+                targetPanel.SetMode(targetMode);
             }
 
             @Override

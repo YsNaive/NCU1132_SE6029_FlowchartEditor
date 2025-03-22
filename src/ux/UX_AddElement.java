@@ -1,6 +1,7 @@
 package ux;
 
 import core.Vector2;
+import visual.OvalElement;
 import visual.RectElement;
 import visual.VisualElement;
 import visual.VisualPanel;
@@ -19,7 +20,7 @@ public final class UX_AddElement implements MouseInputListener {
         VisualElement element;
         switch (target.GetMode()){
             case Rect -> element = new RectElement();
-            case Oval -> element = null;
+            case Oval -> element = new OvalElement();
             default   -> element = null;
         };
         if(element == null)

@@ -2,7 +2,7 @@ package manager;
 
 import core.Pair;
 import visual.VisualPanel;
-import ux.UX_ModeButton;
+import ux.UI_ModeButton;
 import visual.VisualPanelMode;
 
 import javax.swing.*;
@@ -52,7 +52,7 @@ public final class UIManager {
         );
 
         for (Pair<String, VisualPanelMode> toolMode : toolModes) {
-            UX_ModeButton button = new UX_ModeButton(toolMode.key, visualPanel, toolMode.value); // 傳入名稱與模式
+            UI_ModeButton button = new UI_ModeButton(toolMode.key, visualPanel, toolMode.value); // 傳入名稱與模式
             button.setFont(customFont);  // 設定按鈕字體
             toolPanel.add(button);
         }

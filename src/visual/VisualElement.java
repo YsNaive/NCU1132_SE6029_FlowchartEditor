@@ -4,6 +4,7 @@ import core.Drawer;
 import core.Rect;
 import core.Vector2;
 
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class VisualElement {
     public float   rotation; // in degree
     public Vector2 scale;
     public boolean pickable;
-    public List<Port> ports;
+    public boolean visible;
     private VisualElement       m_parent;
     private List<VisualElement> m_children;
     private int m_layer;
@@ -36,14 +37,14 @@ public class VisualElement {
         this.rotation = rotation;
         this.scale    = scale;
         this.pickable = true;
-        this.ports    = new ArrayList<Port>();
+        this.visible  = true;
         this.m_parent = null;
         this.m_children = new ArrayList<>();
         this.m_layer  = layer;
     }
 
     public final void SetParent(VisualElement newParent) {
-        Vector2 worldPos = GetWorldPosition();
+        Vector2 newPos = GetWorldPosition();
         if (this.m_parent != null) {
             this.m_parent.m_children.remove(this);
         }
@@ -51,8 +52,9 @@ public class VisualElement {
         if (newParent != null) {
             newParent.m_children.add(this);
             newParent.sortChildren();
+            newPos = m_parent.World2LocalPosition(newPos);
         }
-        this.position = World2LocalPosition(worldPos);
+        this.position = newPos;
     }
 
     public void Add(VisualElement ve){
@@ -109,11 +111,15 @@ public class VisualElement {
         return m_parent.GetWorldPosition().Add(position);
     }
 
-    public final Port GetPort(Vector2 localPos){
+    public Vector2[] GetPorts(){
+        return new Vector2[]{};
+    }
+
+    public final Vector2 GetClosestPort(Vector2 localPos){
         float min = Float.MAX_VALUE;
-        Port ret = null;
-        for(var port : ports){
-            float len = localPos.Sub(port.position).GetLength();
+        Vector2 ret = null;
+        for(var port : GetPorts()){
+            float len = localPos.Sub(port).GetLength();
             if(len < min){
                 min = len;
                 ret = port;
@@ -127,7 +133,7 @@ public class VisualElement {
     }
 
     public final Vector2 World2LocalPosition(Vector2 worldPos) {
-        return worldPos.Sub(m_parent != null ? m_parent.GetWorldPosition() : new Vector2(0, 0));
+        return worldPos.Sub(GetWorldPosition());
     }
 
     public final void Translate(Vector2 delta) {
@@ -217,7 +223,8 @@ public class VisualElement {
     }
 
     public void RenderSelecting(Drawer drawer){
-
+        for(Vector2 pos : GetPorts())
+            drawer.DrawPort(pos, Color.BLACK);
     }
 
     public Rect GetBoundingBox(){
@@ -225,9 +232,16 @@ public class VisualElement {
         return new Rect(worldPos.x, worldPos.y,0,0);
     }
 
-    public boolean TryPick(Vector2 localPos) {
+    public boolean TryPick(Vector2 worldPos) {
+        Vector2 localPos = World2LocalPosition(worldPos);
         Rect bound = GetBoundingBox();
         return localPos.x >= 0 && localPos.x <= bound.width &&
                localPos.y >= 0 && localPos.y <= bound.height;
+    }
+
+    public void MarkDirty(){
+        VisualPanel panel = GetPanel();
+        if(panel != null)
+            panel.repaint();
     }
 }

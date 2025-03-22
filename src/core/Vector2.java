@@ -39,6 +39,13 @@ public class Vector2 {
         );
     }
 
+    public float ToDegree() {
+        return (float) Math.toDegrees(Math.atan2(y, x));
+    }
+    public float ToRadius() {
+        return (float) Math.atan2(y, x);
+    }
+
     public Vector2 Normalize() {
         float len = GetLength();
         if (len == 0) return new Vector2(0, 0);

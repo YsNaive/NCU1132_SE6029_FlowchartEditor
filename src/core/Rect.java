@@ -22,6 +22,27 @@ public class Rect {
         this(position.x, position.y, size.x, size.y);
     }
 
+    public static Rect From2Positions(Vector2 p1, Vector2 p2){
+        Rect ret = new Rect();
+        if(p1.x < p2.x){
+            ret.x = p1.x;
+            ret.width = p2.x-p1.x;
+        }
+        else {
+            ret.x = p2.x;
+            ret.width = p1.x - p2.x;
+        }
+        if(p1.y < p2.y){
+            ret.y = p1.y;
+            ret.height = p2.y-p1.y;
+        }
+        else {
+            ret.y = p2.y;
+            ret.height = p1.y - p2.y;
+        }
+        return ret;
+    }
+
     public String ToString() {
         return "(" + x + ", " + y + ", " + width + ", " + height + ")";
     }

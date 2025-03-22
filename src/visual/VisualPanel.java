@@ -4,11 +4,13 @@ import core.Drawer;
 import core.Rect;
 import core.Vector2;
 import ux.UX_AddElement;
+import ux.UX_Select;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class VisualPanel extends JPanel{
@@ -18,28 +20,28 @@ public class VisualPanel extends JPanel{
         root      = ve;
         selecting = new ArrayList<VisualElement>();
         m_mode    = VisualPanelMode.Select;
-
-        SetMode(VisualPanelMode.Rect);
+        m_inputListenerMap = new HashMap<>();
+        initInputListenerMap();
     }
 
     public final VisualElement root;
     public final List<VisualElement> selecting;
     private VisualPanelMode m_mode;
-    private MouseInputListener ux_handler;
+    private MouseInputListener currInputListener;
+    private final HashMap<VisualPanelMode, MouseInputListener> m_inputListenerMap;
 
     public VisualPanelMode GetMode(){return m_mode;}
     public void SetMode(VisualPanelMode mode){
         if(mode == m_mode)
             return;
-        removeMouseListener      (ux_handler);
-        removeMouseMotionListener(ux_handler);
-
-        if(mode == VisualPanelMode.Rect ||
-           mode == VisualPanelMode.Oval){
-            ux_handler = new UX_AddElement(this);
+        if(currInputListener != null){
+            removeMouseListener      (currInputListener);
+            removeMouseMotionListener(currInputListener);
         }
-        addMouseListener      (ux_handler);
-        addMouseMotionListener(ux_handler);
+
+        currInputListener = m_inputListenerMap.get(mode);
+        addMouseListener      (currInputListener);
+        addMouseMotionListener(currInputListener);
 
         m_mode = mode;
     }
@@ -49,11 +51,12 @@ public class VisualPanel extends JPanel{
         for(var ve : root.VisitFromTop()){
             if(!ve.pickable)
                 continue;
-            if(ve.TryPick(ve.World2LocalPosition(position))){
+            if(ve.TryPick(position)){
                 selecting.add(ve);
                 break;
             }
         }
+        repaint();
     }
     public void SelectElement(Rect bound){
         selecting.clear();
@@ -74,9 +77,20 @@ public class VisualPanel extends JPanel{
         super.paintComponent(g);
         Drawer drawer = new Drawer(g);
         for(var ve : root.VisitFromBottom()){
+            if(!ve.visible)
+                continue;
             ve.Render(drawer);
             if(selecting.contains(ve))
                 ve.RenderSelecting(drawer);
         }
+    }
+
+    private void initInputListenerMap(){
+        m_inputListenerMap.clear();
+        var select = new UX_Select(this);
+        m_inputListenerMap.put(VisualPanelMode.Select, select);
+        var addElement = new UX_AddElement(this);
+        m_inputListenerMap.put(VisualPanelMode.Rect, addElement);
+        m_inputListenerMap.put(VisualPanelMode.Oval, addElement);
     }
 }
