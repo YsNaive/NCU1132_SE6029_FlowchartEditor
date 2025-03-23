@@ -14,6 +14,7 @@ public class VisualElement {
     public Vector2 scale;
     public boolean pickable;
     public boolean visible;
+    public boolean linkable;
     private VisualElement       m_parent;
     private List<VisualElement> m_children;
     private int m_layer;
@@ -38,15 +39,17 @@ public class VisualElement {
         this.scale    = scale;
         this.pickable = true;
         this.visible  = true;
+        this.linkable = true;
         this.m_parent = null;
         this.m_children = new ArrayList<>();
         this.m_layer  = layer;
     }
 
-    public final void SetParent(VisualElement newParent) {
+    public void SetParent(VisualElement newParent) {
         Vector2 newPos = GetWorldPosition();
         if (this.m_parent != null) {
             this.m_parent.m_children.remove(this);
+            System.out.println("T = " + this + "  P = " + m_parent);
         }
         this.m_parent = newParent;
         if (newParent != null) {
@@ -59,6 +62,9 @@ public class VisualElement {
 
     public void Add(VisualElement ve){
         ve.SetParent(this);
+    }
+    public void Remove(VisualElement ve){
+        ve.SetParent(null);
     }
 
     public final void SetLayer(int newLayer) {
@@ -111,15 +117,15 @@ public class VisualElement {
         return m_parent.GetWorldPosition().Add(position);
     }
 
-    public Vector2[] GetPorts(){
+    public Vector2[] GetWorldPorts(){
         return new Vector2[]{};
     }
 
-    public final Vector2 GetClosestPort(Vector2 localPos){
+    public final Vector2 GetClosestWorldPort(Vector2 worldPos){
         float min = Float.MAX_VALUE;
         Vector2 ret = null;
-        for(var port : GetPorts()){
-            float len = localPos.Sub(port).GetLength();
+        for(var port : GetWorldPorts()){
+            float len = worldPos.Sub(port).GetLength();
             if(len < min){
                 min = len;
                 ret = port;
@@ -223,7 +229,7 @@ public class VisualElement {
     }
 
     public void RenderSelecting(Drawer drawer){
-        for(Vector2 pos : GetPorts())
+        for(Vector2 pos : GetWorldPorts())
             drawer.DrawPort(pos, Color.BLACK);
     }
 
@@ -243,5 +249,14 @@ public class VisualElement {
         VisualPanel panel = GetPanel();
         if(panel != null)
             panel.repaint();
+    }
+
+    private void printHierarchyRec(String prefix){
+        System.out.println(prefix + this);
+        for(var ve : m_children)
+            ve.printHierarchyRec("  "+prefix);
+    }
+    public void PrintHierarchy(){
+        printHierarchyRec("- ");
     }
 }

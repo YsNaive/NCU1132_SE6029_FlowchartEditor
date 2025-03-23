@@ -39,7 +39,7 @@ public class RectElement extends VisualElement{
     }
 
     @Override
-    public Vector2[] GetPorts() {
+    public Vector2[] GetWorldPorts() {
         float halfW = width /2f;
         float halfH = height/2f;
         return new Vector2[]{

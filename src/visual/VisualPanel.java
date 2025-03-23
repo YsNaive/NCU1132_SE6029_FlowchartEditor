@@ -4,6 +4,7 @@ import core.Drawer;
 import core.Rect;
 import core.Vector2;
 import ux.UX_AddElement;
+import ux.UX_AddLink;
 import ux.UX_Select;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 public class VisualPanel extends JPanel{
     public VisualPanel() {
@@ -22,6 +24,14 @@ public class VisualPanel extends JPanel{
         m_mode    = VisualPanelMode.Select;
         m_inputListenerMap = new HashMap<>();
         initInputListenerMap();
+
+        ve = new RectElement();
+        ve.position = new Vector2(10,10);
+        root.Add(ve);
+        VisualElement ve2 = new OvalElement();
+        ve2.position = new Vector2(150,10);
+        root.Add(ve2);
+        LinkElement ve3 = new LinkElement(ve, ve2);
     }
 
     public final VisualElement root;
@@ -46,10 +56,18 @@ public class VisualPanel extends JPanel{
         m_mode = mode;
     }
 
-    public void SelectElement(Vector2 position){
+    private boolean ignoreCheck(VisualElement ve){
+        if(ve.pickable)
+            return false;
+        if(m_mode.IsLink() && !ve.linkable)
+            return false;
+        return true;
+    }
+    public void SelectElement(Vector2 position) { SelectElement(position, this::ignoreCheck);}
+    public void SelectElement(Vector2 position, Function<VisualElement, Boolean> isIgnore){
         selecting.clear();
         for(var ve : root.VisitFromTop()){
-            if(!ve.pickable)
+            if(isIgnore.apply(ve))
                 continue;
             if(ve.TryPick(position)){
                 selecting.add(ve);
@@ -58,10 +76,11 @@ public class VisualPanel extends JPanel{
         }
         repaint();
     }
-    public void SelectElement(Rect bound){
+    public void SelectElement(Rect bound){ SelectElement(bound, this::ignoreCheck); }
+    public void SelectElement(Rect bound, Function<VisualElement, Boolean> isIgnore){
         selecting.clear();
         for(var ve : root.VisitFromTop()){
-            if(!ve.pickable)
+            if(!isIgnore.apply(ve))
                 continue;
             Rect veBound = ve.GetBoundingBox();
             if(veBound.GetXMin() < bound.GetXMin()) continue;
@@ -87,10 +106,17 @@ public class VisualPanel extends JPanel{
 
     private void initInputListenerMap(){
         m_inputListenerMap.clear();
-        var select = new UX_Select(this);
+
+        var select     = new UX_Select    (this);
         m_inputListenerMap.put(VisualPanelMode.Select, select);
+
         var addElement = new UX_AddElement(this);
         m_inputListenerMap.put(VisualPanelMode.Rect, addElement);
         m_inputListenerMap.put(VisualPanelMode.Oval, addElement);
+
+        var addLink    = new UX_AddLink   (this);
+        m_inputListenerMap.put(VisualPanelMode.Association   , addLink);
+        m_inputListenerMap.put(VisualPanelMode.Generalization, addLink);
+        m_inputListenerMap.put(VisualPanelMode.Composition   , addLink);
     }
 }
