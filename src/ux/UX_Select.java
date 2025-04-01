@@ -2,6 +2,7 @@ package ux;
 
 import core.Rect;
 import core.Vector2;
+import visual.CompositeElement;
 import visual.RectElement;
 import visual.VisualElement;
 import visual.VisualPanel;
@@ -14,6 +15,8 @@ public class UX_Select implements MouseInputListener {
     public UX_Select(VisualPanel target){
         this.target = target;
         this.boundPreview = new RectElement();
+        this.boundPreview.pickable = false;
+        this.boundPreview.linkable = false;
         this.boundPreview.SetColor(new Color(0f,0f,1f,0.15f), new Color(0f, 0f, 0f, 0f));
         this.boundPreview.SetLayer(-99);
         this.isGroupSelecting  = false;
@@ -29,14 +32,25 @@ public class UX_Select implements MouseInputListener {
     private Vector2 pressedPos;
     private Vector2 releasedPos;
     private Vector2 dragElementOffset;
+
+
+    private static boolean selectIgnoreCheck(VisualElement ve){
+        if(!ve.pickable)
+            return true;
+        if(ve.GetParent() != null){
+            if(ve.GetParent().getClass() == CompositeElement.class)
+                return true;
+        }
+        return false;
+    }
     @Override
     public void mouseClicked(MouseEvent e) {
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        target.SelectElement(new Vector2(e.getX(), e.getY()));
         pressedPos = new Vector2(e.getX(),e.getY());
+        target.SelectElement(pressedPos, UX_Select::selectIgnoreCheck);
         if(target.selecting.isEmpty()){
             isGroupSelecting = true;
             boundPreview.height = 0;
@@ -55,7 +69,7 @@ public class UX_Select implements MouseInputListener {
         releasedPos.x = e.getX();
         releasedPos.y = e.getY();
         if(isGroupSelecting){
-            target.SelectElement(Rect.From2Positions(pressedPos, releasedPos));
+            target.SelectElement(Rect.From2Positions(pressedPos, releasedPos), UX_Select::selectIgnoreCheck);
             boundPreview.SetParent(null);
             target.repaint();
         }
@@ -70,8 +84,6 @@ public class UX_Select implements MouseInputListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
-        isGroupSelecting = false;
-        boundPreview.SetParent(null);
     }
 
     @Override

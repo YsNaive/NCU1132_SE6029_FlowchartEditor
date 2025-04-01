@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -20,6 +21,8 @@ public class VisualPanel extends JPanel{
         VisualElement ve = new VisualElement();
         ve.SetPanel(this);
         root      = ve;
+        root.pickable = false;
+        root.linkable = false;
         selecting = new ArrayList<VisualElement>();
         m_mode    = VisualPanelMode.Select;
         m_inputListenerMap = new HashMap<>();
@@ -80,7 +83,7 @@ public class VisualPanel extends JPanel{
     public void SelectElement(Rect bound, Function<VisualElement, Boolean> isIgnore){
         selecting.clear();
         for(var ve : root.VisitFromTop()){
-            if(!isIgnore.apply(ve))
+            if(isIgnore.apply(ve))
                 continue;
             Rect veBound = ve.GetBoundingBox();
             if(veBound.GetXMin() < bound.GetXMin()) continue;
@@ -118,5 +121,41 @@ public class VisualPanel extends JPanel{
         m_inputListenerMap.put(VisualPanelMode.Association   , addLink);
         m_inputListenerMap.put(VisualPanelMode.Generalization, addLink);
         m_inputListenerMap.put(VisualPanelMode.Composition   , addLink);
+    }
+
+    public CompositeElement GroupSelecting(){
+        if (selecting.size()<=1)
+            return null;
+        CompositeElement group = new CompositeElement();
+        group.SetLayer (selecting.get(0).GetLayer ());
+        group.SetParent(selecting.get(0).GetParent());
+        for(var ve : selecting)
+            group.Add(ve);
+        selecting.clear();
+        selecting.add(group);
+        repaint();
+        return group;
+    }
+
+    public boolean UnGroupSelecting(){
+        if(selecting.size()!=1)
+            return false;
+        if(selecting.get(0).getClass()!= CompositeElement.class)
+            return false;
+        VisualElement group  = selecting.get(0);
+        VisualElement parent = group.GetParent();
+        group.PrintHierarchy();
+        selecting.clear();
+        List<VisualElement> list = new ArrayList<>();
+        for (VisualElement element : group.GetChildren())
+            list.add(element);
+        for (var ve : list){
+            ve.SetParent(parent);
+            selecting.add(ve);
+            System.out.println(ve);
+        }
+        group.SetParent(null);
+        repaint();
+        return true;
     }
 }

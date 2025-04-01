@@ -57,10 +57,11 @@ public class UX_AddLink implements MouseInputListener {
         target.SelectElement(new Vector2(e.getX(),e.getY()), UX_AddLink::selectIgnoreCheck);
         if(!target.selecting.isEmpty()){
             dst = target.selecting.get(0);
-            LinkElement element = new LinkElement(src, dst);
-            element.endpointType = EndpointType.ParseFromVisualPanelMode(target.GetMode());
+            if(src != dst){
+                LinkElement element = new LinkElement(src, dst);
+                element.endpointType = EndpointType.ParseFromVisualPanelMode(target.GetMode());
+            }
         }
-
         src = null;
         dst = null;
         isDraging = false;

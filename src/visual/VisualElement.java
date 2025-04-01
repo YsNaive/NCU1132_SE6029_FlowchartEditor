@@ -49,7 +49,6 @@ public class VisualElement {
         Vector2 newPos = GetWorldPosition();
         if (this.m_parent != null) {
             this.m_parent.m_children.remove(this);
-            System.out.println("T = " + this + "  P = " + m_parent);
         }
         this.m_parent = newParent;
         if (newParent != null) {
@@ -92,14 +91,14 @@ public class VisualElement {
         return this.m_parent;
     }
 
-    public final Iterator<VisualElement> GetChildren() {
-        return m_children.iterator();
+    public final Iterable<VisualElement> GetChildren() {
+        return m_children;
     }
 
-    public final Iterator<VisualElement> GetChildrenReversed() {
+    public final Iterable<VisualElement> GetChildrenReversed() {
         List<VisualElement> reversed = new ArrayList<>(m_children);
         Collections.reverse(reversed);
-        return reversed.iterator();
+        return reversed;
     }
 
     public final VisualElement GetChildren(int index) {

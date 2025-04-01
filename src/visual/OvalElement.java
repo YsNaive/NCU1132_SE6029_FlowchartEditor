@@ -39,11 +39,12 @@ public class OvalElement extends VisualElement{
     public Vector2[] GetWorldPorts() {
         float halfW = width /2f;
         float halfH = height/2f;
+        Vector2 worldPos = GetWorldPosition();
         return new Vector2[]{
-                new Vector2(position.x, position.y + halfH),
-                new Vector2(position.x + halfW, position.y + height),
-                new Vector2(position.x + width, position.y + halfH),
-                new Vector2(position.x + halfW, position.y),
+                new Vector2(worldPos.x, worldPos.y + halfH),
+                new Vector2(worldPos.x + halfW, worldPos.y + height),
+                new Vector2(worldPos.x + width, worldPos.y + halfH),
+                new Vector2(worldPos.x + halfW, worldPos.y),
         };
     }
 
