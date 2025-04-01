@@ -18,6 +18,8 @@ public class TextElement extends VisualElement{
     public TextElement(String text){
         font = new Font("Arial", Font.PLAIN, 20);
         this.text = text;
+        this.pickable = false;
+        this.linkable = false;
     }
 
     public Font   font;
@@ -25,14 +27,12 @@ public class TextElement extends VisualElement{
     private int m_descent = 0;
     @Override
     public void Render(Drawer drawer){
-        Rect bound = GetBoundingBox();
+        Rect bound = this.GetTextBoundingBox();
         Vector2 pos = new Vector2(bound.x, bound.y + bound.height - m_descent);
-        drawer.FillRect(bound, Color.lightGray);
         drawer.DrawText(pos, text, font, Color.BLACK);
     }
-    @Override
-    public Rect GetBoundingBox(){
-        Rect ret = new Rect(position.x, position.y,0,0);
+    public final Rect GetTextBoundingBox(){
+        Rect ret = new Rect(GetWorldPosition(),new Vector2(0,0));
         VisualPanel panel = GetPanel();
         FontMetrics metrics = panel.getFontMetrics(font);
 
@@ -44,5 +44,9 @@ public class TextElement extends VisualElement{
         ret.x -= ret.width /2;
         ret.y -= ret.height/2;
         return ret;
+    }
+    @Override
+    public Rect GetBoundingBox(){
+        return GetTextBoundingBox();
     }
 }

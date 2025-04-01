@@ -66,6 +66,15 @@ public class VisualElement {
         ve.SetParent(null);
     }
 
+    public <T extends VisualElement> T Q(Class<T> veType){
+        for(var ve : this.VisitFromTop()){
+            if(ve.getClass() == veType){
+                return (T)ve;
+            }
+        }
+        return null;
+    }
+
     public final void SetLayer(int newLayer) {
         this.m_layer = newLayer;
         if (this.m_parent != null) {

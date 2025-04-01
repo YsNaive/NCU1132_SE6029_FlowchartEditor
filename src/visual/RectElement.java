@@ -2,11 +2,20 @@ package visual;
 
 import core.Drawer;
 import core.Rect;
+import core.ShapeType;
 import core.Vector2;
 
 import java.awt.*;
 
 public class RectElement extends VisualElement{
+    public RectElement(){
+        var ve = new LabelElement();
+        ve.text     = "";
+        ve.bgShape  = ShapeType.Rect;
+        ve.position = new Vector2(this.width/2f, this.height/2f);
+        this.Add(ve);
+    }
+
     public float width  = 100;
     public float height = 60;
     private Color backgroundColor = new Color(.95f,.95f,.95f);

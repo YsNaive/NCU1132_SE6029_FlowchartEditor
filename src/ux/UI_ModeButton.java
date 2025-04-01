@@ -12,7 +12,8 @@ public class UI_ModeButton extends JButton {
     private static final int m_padding = 2;
     private static final int m_radius = 8;
     private Color defaultColor = Color.WHITE;
-    private Color hoverColor = new Color(220, 220, 220); // 淺灰色
+    private Color hoverColor = new Color(220, 220, 220);
+    private Color selectedColor = new Color(240,230,255);
     private final VisualPanel     targetPanel;
     private final VisualPanelMode targetMode;
     public UI_ModeButton(String text, VisualPanel target, VisualPanelMode mode) {
@@ -32,6 +33,9 @@ public class UI_ModeButton extends JButton {
             @Override
             public void mousePressed(MouseEvent e) {
                 targetPanel.SetMode(targetMode);
+                setBackground(selectedColor);
+                targetPanel.revalidate();
+                targetPanel.repaint();
             }
 
             @Override
@@ -42,13 +46,13 @@ public class UI_ModeButton extends JButton {
             @Override
             public void mouseEntered(MouseEvent e) {
                 setBackground(hoverColor);
-                repaint();
+                targetPanel.repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 setBackground(defaultColor);
-                repaint();
+                targetPanel.repaint();
             }
         });
     }
@@ -57,10 +61,12 @@ public class UI_ModeButton extends JButton {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(getBackground());
+        if(targetPanel.GetMode() == targetMode)
+            g2.setColor(selectedColor);
+        else
+            g2.setColor(getBackground());
         g2.fillRoundRect(m_padding, m_padding, getWidth() - m_padding * 2, getHeight() - m_padding * 2, m_radius, m_radius);
 
-        // 繪製文字
         super.paintComponent(g);
     }
 

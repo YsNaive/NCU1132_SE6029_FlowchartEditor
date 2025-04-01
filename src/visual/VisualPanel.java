@@ -24,7 +24,7 @@ public class VisualPanel extends JPanel{
         root.pickable = false;
         root.linkable = false;
         selecting = new ArrayList<VisualElement>();
-        m_mode    = VisualPanelMode.Select;
+        m_mode    = VisualPanelMode.None;
         m_inputListenerMap = new HashMap<>();
         initInputListenerMap();
 
@@ -35,6 +35,8 @@ public class VisualPanel extends JPanel{
         ve2.position = new Vector2(150,10);
         root.Add(ve2);
         LinkElement ve3 = new LinkElement(ve, ve2);
+
+        SetMode(VisualPanelMode.Select);
     }
 
     public final VisualElement root;
@@ -98,7 +100,7 @@ public class VisualPanel extends JPanel{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Drawer drawer = new Drawer(g);
-        for(var ve : root.VisitFromBottom()){
+        for(var ve : root.VisitFromTop()){
             if(!ve.visible)
                 continue;
             ve.Render(drawer);

@@ -2,11 +2,21 @@ package visual;
 
 import core.Drawer;
 import core.Rect;
+import core.ShapeType;
 import core.Vector2;
 
 import java.awt.*;
 
 public class OvalElement extends VisualElement{
+    public OvalElement(){
+        var ve = new LabelElement();
+        ve.text     = "";
+        ve.bgShape  = ShapeType.Oval;
+        ve.position = new Vector2(this.width/2f, this.height/2f);
+
+        this.Add(ve);
+    }
+
     public float width  = 100;
     public float height = 60;
 

@@ -1,6 +1,9 @@
 package manager;
 
 import core.Pair;
+import ux.LabelStyleEditorDialog;
+import visual.LabelElement;
+import visual.VisualElement;
 import visual.VisualPanel;
 import ux.UI_ModeButton;
 import visual.VisualPanelMode;
@@ -20,6 +23,7 @@ public final class UIManager {
     private static Container m_container;
     private static VisualPanel m_visualPanel;
     private static JMenuBar m_menuBar;
+    private static LabelStyleEditorDialog m_labelStyleEditor;
     private static Font customFont = new Font("Microsoft JhengHei UI", Font.BOLD, 16);
 
     public static void Init(){
@@ -61,7 +65,10 @@ public final class UIManager {
         m_frame.setLocation(600, 250);
         m_frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         m_frame.setVisible(true);
+
+        m_labelStyleEditor = new LabelStyleEditorDialog(m_frame);
     }
+
     private static void initMenu(){
         m_menuBar= new JMenuBar();
         m_frame.setJMenuBar(m_menuBar);
@@ -72,6 +79,18 @@ public final class UIManager {
         m_menuBar.add(fileMenu);
         m_menuBar.add(editMenu);
 
+        JMenuItem labelStyleMenuItem = new JMenuItem("Edit Label");
+        labelStyleMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(m_visualPanel.selecting.isEmpty())
+                    return;
+                LabelElement target = m_visualPanel.selecting.get(0).Q(LabelElement.class);
+                if(target == null)
+                    return;
+                m_labelStyleEditor.Open(target);
+            }
+        });
         JMenuItem groupMenuItem = new JMenuItem("Group");
         groupMenuItem.addActionListener(new ActionListener() {
             @Override
@@ -86,6 +105,7 @@ public final class UIManager {
                 m_visualPanel.UnGroupSelecting();
             }
         });
+        editMenu.add(labelStyleMenuItem);
         editMenu.add(groupMenuItem);
         editMenu.add(ungroupMenuItem);
     }
